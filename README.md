@@ -33,15 +33,20 @@ OverKill:CreateKeySystem({
 ```
 
 ### 3. Creating the Main Window & Tabs
-The new architecture supports Tabs inherently.
+The new architecture supports beautiful themes, fonts, and custom string-based window sizing (`"tiny"`, `"small"`, `"medium"`, `"big"`, `"huge"`).
 ```lua
 local Window = OverKill:CreateWindow({
-    Title = "OverKill Hub v2",
-    Size = UDim2.new(0, 600, 0, 400)
+    Title = "OverKill Hub v3",
+    Icon = "rbxassetid://6034287525", -- Top bar icon
+    Size = "medium",                  -- String based easy-sizing
+    Font = Enum.Font.GothamMedium     -- Custom font rendering
 })
 
-local MainTab = Window:CreateTab("Main", "rbxassetid://123456")
-local SettingsTab = Window:CreateTab("Settings")
+-- Load a Pre-built Theme (Default, Midnight, Blood, Ocean, Light)
+OverKill:SetTheme(OverKill.Themes.Midnight)
+
+local MainTab = Window:CreateTab("Main", "rbxassetid://6031265976") -- With tab icon
+local SettingsTab = Window:CreateTab("Settings")                    -- Without icon
 ```
 
 ---
