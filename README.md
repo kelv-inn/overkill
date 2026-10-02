@@ -15,14 +15,16 @@ Welcome to the documentation for **OverKill**, the ultimate, state-of-the-art UI
 
 ### 1. Initialization
 ```lua
-local OverKill = loadstring(game:HttpGet("YOUR_URL_HERE"))()
+local OverKill = loadstring(game:HttpGet("https://raw.githubusercontent.com/kelv-inn/overkill/refs/heads/main/OverKill.lua"))()
 ```
 
 ### 2. (Optional) Key System Authentication
 If you want to protect your script:
 ```lua
 OverKill:CreateKeySystem({
-    Key = "PREMIUM-OVERKILL-KEY",
+    -- Key = "PREMIUM-OVERKILL-KEY",               -- Use this for a hardcoded key
+    KeyUrl = "https://example.com/raw/key.txt",    -- Use this to fetch the key from a website
+    KeyExpiration = 86400,                         -- 24 hours in seconds (Saves and bypasses key system until expired)
     OnSuccess = function()
         -- Load your main UI here
         LoadMainUI()
