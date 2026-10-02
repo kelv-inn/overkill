@@ -352,7 +352,38 @@ end)
 function OverKill:CreateKeySystem(options)
     options = options or {}
     local ValidKey = options.Key or "OVERKILL-PREMIUM"
+    local KeyUrl = options.KeyUrl -- e.g., raw github/pastebin link
+    local ExpirationTime = options.KeyExpiration or 0 -- in seconds, e.g., 86400 for 24h
     local OnSuccess = options.OnSuccess or function() end
+
+    -- Fetch key from URL if provided
+    if KeyUrl then
+        local success, result = pcall(function()
+            return game:HttpGet(KeyUrl)
+        end)
+        if success and result then
+            -- Remove any whitespace/newlines
+            ValidKey = result:gsub("%s+", "")
+        else
+            warn("OverKill: Failed to fetch key from URL.")
+        end
+    end
+
+    -- Check if key is cached and not expired
+    local SaveFileName = "OverKill_Auth.json"
+    if IS_FILE(SaveFileName) and ExpirationTime > 0 then
+        local success, data = pcall(function()
+            return HttpService:JSONDecode(READ_FILE(SaveFileName))
+        end)
+        if success and type(data) == "table" then
+            if data.Key == ValidKey and data.ExpiresAt > os.time() then
+                -- Still valid, bypass key system entirely
+                self:Notify({Title = "Authentication", Content = "Welcome back! Cached key loaded.", Duration = 4})
+                OnSuccess()
+                return
+            end
+        end
+    end
 
     local KeyWindow = CreateInstance("Frame", {
         Size = UDim2.new(0, 350, 0, 200),
@@ -409,6 +440,14 @@ function OverKill:CreateKeySystem(options)
 
     SubmitBtn.MouseButton1Click:Connect(function()
         if KeyBox.Text == ValidKey then
+            if ExpirationTime > 0 then
+                local saveData = {
+                    Key = ValidKey,
+                    ExpiresAt = os.time() + ExpirationTime
+                }
+                WRITE_FILE(SaveFileName, HttpService:JSONEncode(saveData))
+            end
+
             TweenService:Create(KeyWindow, self.Easing.Bouncy, {Size = UDim2.new(0, 350, 0, 0)}):Play()
             task.wait(self.Easing.Bouncy.Time)
             KeyWindow:Destroy()
